@@ -1,3 +1,5 @@
+#include "demo.h"
+
 #include "schaibe.h"
 #include <stdlib.h>
 #include <stdio.h>

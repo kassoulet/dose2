@@ -1,3 +1,5 @@
+#include "demo.h"
+
 #include "schaibe.h"
 //#include <lib2\mem.h>
 //#include <lib2\asm.h>

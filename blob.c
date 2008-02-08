@@ -1,3 +1,5 @@
+#include "demo.h"
+
 #include "blob.h"
 #include <math.h>
 

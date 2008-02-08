@@ -6,6 +6,7 @@ CFLAGS = -O2 -ffast-math `$(SDLPREFIX)sdl-config --cflags`
 #CFLAGS += -DOSX
 # --
 
+
 # Endianness of the system. Leave commented for MSB systems (PPC/MIPS/etc.)
 CFLAGS += -DINTEL
 
