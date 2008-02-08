@@ -98,7 +98,7 @@ void audioback(void *oggi, unsigned char *stream, int len) {
 void fla(int a) {}
 int main(int argc, char *argv[]) {
   int i, j, bytesleft;
-  int current_section,fullscreen=1;
+  int current_section,fullscreen=0;
   int skip=0;
   float t;
 //  MIDASstreamHandle stream=0;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
   unsigned time0, timex;
   SDL_Surface *screen;
   SDL_Color colors[256];
-  static int graffa[160*480];
+  static int graffa[160*HEIGHT];
   static SDL_AudioSpec aanispex;
 
 //  signal(SIGSEGV, fla);
@@ -164,15 +164,15 @@ int main(int argc, char *argv[]) {
 #endif
 
   if(fullscreen)
-    screen=SDL_SetVideoMode(640, 480, 8, SDL_SWSURFACE|SDL_FULLSCREEN);//|SDL_DOUBLEBUF);
+    screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE|SDL_FULLSCREEN);//|SDL_DOUBLEBUF);
   else
   {
-    screen=SDL_SetVideoMode(640, 480, 8, SDL_SWSURFACE);//|SDL_DOUBLEBUF);
+    screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE);//|SDL_DOUBLEBUF);
     SDL_WM_SetCaption("dose 2 by mfx",NULL);
   }
 
   fprintf(stderr, "d2\n");
-//  screen=SDL_SetVideoMode(640, 480, 8, 0);
+//  screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, 0);
   SDL_ShowCursor(0);
   fprintf(stderr, "d3\n");
 
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
 
     //l=vid_openlfb(v);
     init_layers((char*)graffa, new_col(0, 0, 0, 0));
-    memset(graffa, 0, 640*480);
+    memset(graffa, 0, WIDTH*HEIGHT);
     //{ static Positio p; t=pos_get(&p); }
 
     {
@@ -242,11 +242,11 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    //for (i=1; i<640; i++) l->buf[i]^=l->buf[i-1];
+    //for (i=1; i<WIDTH; i++) l->buf[i]^=l->buf[i-1];
 
 
-    //for (i=0; i<480; i++) l->buf[i*640]=0, l->buf[i*640+1]=0;
-    //for (i=0; i*10<480; i++) l->buf[i*10*640]=l->buf[i*10*640]=i^i+1;
+    //for (i=0; i<HEIGHT; i++) l->buf[i*WIDTH]=0, l->buf[i*WIDTH+1]=0;
+    //for (i=0; i*10<HEIGHT; i++) l->buf[i*10*WIDTH]=l->buf[i*10*WIDTH]=i^i+1;
     {
       char *p=teepal1();
       static SDL_Color pp[256];
@@ -262,11 +262,12 @@ int main(int argc, char *argv[]) {
     release();
   }
 
-  SDL_CloseAudio();
 
 
+  //fclose(fp);
   ov_clear(&oggi);
-  fclose(fp);
+  SDL_CloseAudio();
+  //fclose(fp);
 /*  if ( !MIDASstopStream(stream) )
     MIDASerror();
   if ( !MIDAScloseChannels() )

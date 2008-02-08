@@ -7,13 +7,13 @@ CFLAGS = -O2 -ffast-math `$(SDLPREFIX)sdl-config --cflags`
 # --
 
 # Endianness of the system. Leave commented for MSB systems (PPC/MIPS/etc.)
-#CFLAGS += -DINTEL
+CFLAGS += -DINTEL
 
 objs = alue.o argb.o blob.o demo.o layer.o line.o main.o obu2d.o ogdecode.o palette.o schaibe.o taso.o
 
 dose2: $(objs)
-	gcc -o dose2 $(objs) `$(SDLPREFIX)sdl-config --libs` -lm
-	strip dose2
+	gcc -g -o dose2 $(objs) `$(SDLPREFIX)sdl-config --libs` -lm
+	#strip dose2
 
 clean:
 	rm *.o dose2
