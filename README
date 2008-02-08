@@ -1,0 +1,73 @@
+
+this is the full source release of "dose 2" by mfx. a little endian cleaning
+and fixing for non-pc platforms was done my marq/fit (marq@iki.fi). should be 
+easy to compile on any modern os that has sdl (www.libsdl.org). tested and 
+runs fine on ppc-linux, x86-linux, sgi and mac os x.
+
+and now follows the original infofile that came with dose 2
+---
+
+mfx 2001 commercial crap posse presents
+
+dose 2 : valetta
+
+
+disclaimer:
+
+this demo does not feature any racism. (tested on 2x italians, 
+laughed their asses off) if you think it does, you are stupid.
+
+
+featuring:
+
+emperor of code 216 and design deity uncle-x
+house music god little bitchard and cartoon prince manticore
+
+additional credits might be given to video serf nosfe,
+sampo "little bitchards friend" and intro leader rainmaker.
+
+contact: 
+216 jwuolijo@cs.helsinki.fi 
+uncle-x naleskin@cs.helsinki.fi 
+manticore apaarni@urova.fi 
+little bitchard arto@genera.fi
+
+
+
+requires a linux: (massembly organizers decided that dos has nothing
+to do with demoscene or naything..) a machine with sufficient
+processing power might also be useful.
+uses sdl (simple directmedia layer) v1.2 for sound and music. maybe
+graphics too. so it should work with just about anything where
+something works at all. 
+sudo modprobe sb 
+sudo modprobe blaablaafb
+killall esd
+export SDL_VIDEODRIVER=foo
+export SDL_AUDIODRIVER=faa
+./a.out
+
+fainal version may come with even dos suppo (yea, left)
+
+and yes we know the lyrics go "two pieces of toast" and yet we show you
+some nice pizzza. it's more italian or something or something.
+
+
+
+greets:
+
+kooma, haujobb, dcs, spinning kids, calodox, flo, iso, phn, unique,
+exceed, wamma, rno, retro-ac, mass, komplex, trsi, pWp, fobia design,
+cycla, farbrauch, dekadence, byterapers, damones, damage, rtp
+and all the rest we forgot, mistyped or typed twice...
+
+mfx statistics:
+
+216, uncle-x, synteesi, rainmaker, dead meat, little bitchard,
+dixan, manticore, pyromaniac, ellyn, clifford m., nosfe &
+roi "i won't choose a handle so bite me" blask
+
+-girl i house ya!-
+
+
+kiitos paskasta, syökää rahaa.
