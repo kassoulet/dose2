@@ -342,7 +342,9 @@ void rundemo(float t) {
     blob_draw(b, new_layer(cols5));
   }
 
-
+// kass test
+    obu2d_draw(new_obu2d_melt(mfx, 0.65+0.5*sin((t+2-7.5*32)*.5*pii)), new_layer(cols1), 0,
+    new_m2_roto(0, 0, 14.0, 0), &m2d_ident);
 
 
 

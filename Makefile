@@ -1,4 +1,4 @@
-CC = gcc
+CC = ccache gcc
 CFLAGS = -O2 -ffast-math `$(SDLPREFIX)sdl-config --cflags`
 
 # -- These are for Mac OS X only, remove for other targets

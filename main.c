@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
   unsigned time0, timex;
   SDL_Surface *screen;
   SDL_Color colors[256];
-  static int graffa[160*HEIGHT];
+  static Uint32 graffa[WIDTH/4*HEIGHT];
   static SDL_AudioSpec aanispex;
 
 //  signal(SIGSEGV, fla);
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
     screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE|SDL_FULLSCREEN);//|SDL_DOUBLEBUF);
   else
   {
-    screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE);//|SDL_DOUBLEBUF);
+    screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE|SDL_DOUBLEBUF);//|SDL_DOUBLEBUF);
     SDL_WM_SetCaption("dose 2 by mfx",NULL);
   }
 
@@ -236,9 +236,9 @@ int main(int argc, char *argv[]) {
 //      p8[rand()&32767]=rand();
       for (x=0; x<screen->w; x++) q8[x]^=q8[x-1];
       for (y=0; y<screen->h-1; y++) {
-        for (x=0; x<screen->w>>2; x++) p32[x]=q32[x], q32[x+160]^=q32[x];
+        for (x=0; x<screen->w>>2; x++) p32[x]=q32[x], q32[x+WIDTH/4]^=q32[x];
         p32+=screen->pitch>>2;
-        q32+=160;
+        q32+=WIDTH/4; //160;
       }
     }
 

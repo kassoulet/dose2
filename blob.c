@@ -40,6 +40,7 @@ void blob_addcomp(Blob *b, float x, float y, float p, float t) {
     }
 }
 void blob_draw(Blob *b, Layer *l) {
+
   int x, y, x0, y0, x1, y1, c, col;
   Piste p1, p2;
   Comp *q;
@@ -49,12 +50,12 @@ void blob_draw(Blob *b, Layer *l) {
   if (b->buf[0].v>0) l->vmem[0]^=col;
   for (y=0; y<30; y++) for (x=0; x<41; x++) {
     q=b->buf+y*41+x;
-    if (q[0].v*q[41].v<0) q->py=new_piste(x*16*4096, (y+q[0].v/(q[0].v-q[41].v))*16*4096.0+4096); else q->py=0;
+    if (q[0].v*q[41].v<0) q->py=new_piste(x*WIDTH/40*4096, (y+q[0].v/(q[0].v-q[41].v))*WIDTH/40*4096.0+4096); else q->py=0;
   }
   for (y=0; y<31; y++) for (x=0; x<40; x++) {
     q=b->buf+y*41+x;
     if (q[0].v*q[1].v<0) {
-      q->px=new_piste((x+q[0].v/(q[0].v-q[1].v))*16*4096.0, y*16*4096+4096);
+      q->px=new_piste((x+q[0].v/(q[0].v-q[1].v))*WIDTH/40*4096.0, y*HEIGHT/30*4096+4096);
       if (y==0) l->vmem[q->px->x>>12]^=col;
     } else q->px=0;
   }
