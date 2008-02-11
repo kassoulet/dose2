@@ -112,6 +112,7 @@ int main(int argc, char *argv[]) {
   SDL_Color colors[256];
   static Uint32 graffa[WIDTH/4*HEIGHT];
   static SDL_AudioSpec aanispex;
+  int frames = 0;
 
 //  signal(SIGSEGV, fla);
 /*  hiippi=malloc(30000000); if (!hiippi) {
@@ -257,11 +258,14 @@ int main(int argc, char *argv[]) {
 //    teepal2();
     SDL_UnlockSurface(screen);
     SDL_Flip(screen);
+    
+    frames++;
 
 
     release();
   }
 
+  printf("fps:%d\n", 1000*frames/timex);
 
 
   //fclose(fp);

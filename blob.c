@@ -50,7 +50,7 @@ void blob_draw(Blob *b, Layer *l) {
   if (b->buf[0].v>0) l->vmem[0]^=col;
   for (y=0; y<30; y++) for (x=0; x<41; x++) {
     q=b->buf+y*41+x;
-    if (q[0].v*q[41].v<0) q->py=new_piste(x*WIDTH/40*4096, (y+q[0].v/(q[0].v-q[41].v))*WIDTH/40*4096.0+4096); else q->py=0;
+    if (q[0].v*q[41].v<0) q->py=new_piste(x*WIDTH/40*4096, (y+q[0].v/(q[0].v-q[41].v))*HEIGHT/30*4096.0+4096); else q->py=0;
   }
   for (y=0; y<31; y++) for (x=0; x<40; x++) {
     q=b->buf+y*41+x;
@@ -136,7 +136,8 @@ void blob_lisaatuneli(Blob *dest, float p, float a, Vector *pos) {
       pz=pos->z+t*suunta.z;
 
       f=(atan2(px, py)+a)+pz/**sin(t)*/*20;
-      f*=0.5/pi; bp++->v+=(fabs(f-fist2(f))-0.25)*p*4;
+      f*=0.5/pi; 
+      bp++->v+=(fabs(f-fist2(f))-0.25)*p*4;
       //bp++->v+=sin(f)*p;
       suunta.x+=camera.i.x;
       suunta.y+=camera.i.y;
