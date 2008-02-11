@@ -222,6 +222,9 @@ int main(int argc, char *argv[]) {
     //l=vid_openlfb(v);
     init_layers((char*)graffa, new_col(0, 0, 0, 0));
     memset(graffa, 0, WIDTH*HEIGHT);
+    
+    
+    
     //{ static Positio p; t=pos_get(&p); }
 
     {
@@ -232,14 +235,25 @@ int main(int argc, char *argv[]) {
 
     {
       int x, y;
+      /*unsigned int *z32=graffa;
+      for (x=0; x>WIDTH*HEIGHT/4; x++) {
+        *z32 >>= 1;
+        *z32 &= 0xfefefefe ;
+        z32++;
+      }*/ 
+      
+      
       int *p32=screen->pixels, *q32=graffa;
       char *q8=(char*)graffa;
-//      p8[rand()&32767]=rand();
+      //p8[rand()&32767]=rand();
       for (x=0; x<screen->w; x++) q8[x]^=q8[x-1];
       for (y=0; y<screen->h-1; y++) {
-        for (x=0; x<screen->w>>2; x++) p32[x]=q32[x], q32[x+WIDTH/4]^=q32[x];
+        for (x=0; x<screen->w>>2; x++) {
+          p32[x]=q32[x];
+          q32[x+WIDTH/4]^=q32[x];
+        }
         p32+=screen->pitch>>2;
-        q32+=WIDTH/4; //160;
+        q32+=WIDTH/4;
       }
     }
 
