@@ -45,13 +45,13 @@ Taso *taso_draw(Taso *k, char *videomem, M2d *m, int kolor) {
     v1.x=fist2(w->x*m->xx+w->y*m->xy+m->x1);
     v1.y=fist2(w->x*m->yx+w->y*m->yy+m->y1);
     v1.code=l_mask(v1.x, 0)&1|l_mask(v1.y, 4096)&2
-           |nl_mask(v1.x, (lxmax+1)*4096)&4|nl_mask(v1.y, (lymax+1)*4096)&8;
+           |nl_mask(v1.x, WIDTH*4096)&4|nl_mask(v1.y, HEIGHT*4096)&8;
     for (w=aa->vl; w<aa->vl+aa->vc; w++) {
       v2=v1;
       v1.x=fist2(w->x*m->xx+w->y*m->xy+m->x1);
       v1.y=fist2(w->x*m->yx+w->y*m->yy+m->y1);
       v1.code=l_mask(v1.x, 0)&1|l_mask(v1.y, 4096)&2
-             |nl_mask(v1.x, (lxmax+1)*4096)&4|nl_mask(v1.y, (lymax+1)*4096)&8;
+             |nl_mask(v1.x, WIDTH*4096)&4|nl_mask(v1.y, HEIGHT*4096)&8;
       if ((v1.code&v2.code)*2&(v1.code^v2.code)&2) videomem[0]^=kolor;
       if (v1.code&v2.code) continue;
       if (v1.code|v2.code) lineclip(videomem, &v1, &v2, kolor); else

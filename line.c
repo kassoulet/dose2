@@ -44,15 +44,15 @@ void lineclip(char *d, Piste *q1, Piste *q2, int c) {
   Piste *p1=getmem(sizeof(Piste)), *p2=getmem(sizeof(Piste));
   p1->x=q1->x; p1->y=q1->y; p2->x=q2->x; p2->y=q2->y;
   clip1(p1, p2, 1,  0,         -1024);
-  clip1(p1, p2, -1, 0, (lxmax+1)*4096-1024);
+  clip1(p1, p2, -1, 0, WIDTH*4096-1024);
   clip1(p1, p2, 0,  1,  -1*4096-1024);
-  clip1(p1, p2, 0, -1, (lymax+1)*4096-1024);
+  clip1(p1, p2, 0, -1, HEIGHT*4096-1024);
   if (q1->code&2&l_mask(p1->x, WIDTH*4096)) d[g_mask(p1->x, 0)&p1->x>>12]^=c;
   if (q2->code&2&l_mask(p2->x, WIDTH*4096)) d[g_mask(p2->x, 0)&p2->x>>12]^=c;
   if ( l_mask(p1->x,        0)| l_mask(p1->y,   1*4096)
-     |nl_mask(p1->x, (lxmax+1)*4096)|nl_mask(p1->y, (lymax+1)*4096)
+     |nl_mask(p1->x, WIDTH*4096)|nl_mask(p1->y, HEIGHT*4096)
      | l_mask(p2->x,        0)| l_mask(p2->y,   1*4096)
-     |nl_mask(p2->x, (lxmax+1)*4096)|nl_mask(p2->y, (lymax+1)*4096)) return;
+     |nl_mask(p2->x, WIDTH*4096)|nl_mask(p2->y, HEIGHT*4096)) return;
   line(d, p1, p2, c);
 }
 
