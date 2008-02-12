@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
   hptrs[0]=hptrs[1]=hiippi;
   mark();
 
-  printf("Dose2 [-fullscreen | -stretch]\n");
+  printf("dose2 by mfx [-WIDTHxHEIGHT -fullscreen -stretch -nofill] \n");
 
 // This one moved here because of OSX oddities...
   if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)<0) {
@@ -182,8 +182,7 @@ int main(int argc, char *argv[]) {
     for(i=1; i<argc; i++) {
       p = argv[i];
       while(*p == '-') p++;
-      printf("argv[%d] = %s\n", i, p);
-      
+
       if(strcmp(p, "fullscreen") == 0) {
         fullscreen=1;
       }
