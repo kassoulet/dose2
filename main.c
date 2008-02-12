@@ -19,6 +19,9 @@
 
 #define HEAPSIZE 10000000
 
+int WIDTH=640;
+int HEIGHT=480;
+
 char *moduleName="data/italo160.ogg";
 volatile unsigned frame;
 float fsin2(float);
@@ -26,7 +29,7 @@ int stopnow=0;
 extern float con, bri;
 
 /* Change this to standard fread() and behold: it's x86 byte order! */
-#ifndef INTEL
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 void fix_fread(void *dest,int dummy,int count,FILE *f)
 {
     int n;
@@ -94,57 +97,54 @@ void audioback(void *oggi, unsigned char *stream, int len) {
 
 }
 
-void fillcopy(SDL_Surface *screen, Uint32* graffa)
+void fillcopy(SDL_Surface *screen, Uint32* graffa, int fill)
 {
   int x, y;
  
   int *p32=screen->pixels, *q32=graffa;
   char *q8=(char*)graffa;
-
+  int nextline=0;
+  if (fill) {
+    nextline = WIDTH/4;
+  }
   for (x=0; x<screen->w; x++) q8[x]^=q8[x-1];
   for (y=0; y<screen->h-1; y++) {
     for (x=0; x<screen->w>>2; x++) {
       p32[x]=q32[x];
-      q32[x+WIDTH/4]^=q32[x];
+      q32[x+nextline]^=q32[x];
     }
     p32+=screen->pitch>>2;
     q32+=WIDTH/4;
   }
 }
 
-int WIDTH=640;
-int HEIGHT=480;
 
 
 void fla(int a) {}
 int main(int argc, char *argv[]) {
   int i, j, bytesleft;
   int current_section,fullscreen=0;
+  int fill=1;
   int skip=0;
   float t;
-//  MIDASstreamHandle stream=0;
   static char buffer[200000];
   FILE *fp;
   OggVorbis_File oggi;
-//  Video *v;
+  vorbis_info *vi;
   int bufsiz;
   unsigned time0, timex;
   SDL_Surface *screen;
   SDL_Color colors[256];
-  static Uint32* graffa; //[WIDTH/4*HEIGHT];
+  static Uint32* graffa;
   static SDL_AudioSpec aanispex;
   int frames = 0;
 
-//  signal(SIGSEGV, fla);
-/*  hiippi=malloc(30000000); if (!hiippi) {
-    fprintf(stderr, "cant allok mem");
-    return 1;
-  }*/
   hptrs[0]=hptrs[1]=hiippi;
   mark();
 
+  printf("Dose2 [-fullscreen | -stretch]\n");
+
 // This one moved here because of OSX oddities...
-  fprintf(stderr, "d-1\n");
   if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)<0) {
     fprintf(stderr, "sdlerror %s\n", SDL_GetError());
     return 1;
@@ -155,14 +155,12 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "error in %s", moduleName);
     return 1;
   }
-  fprintf(stderr, "d-2\n");
-  {
-    vorbis_info *vi=ov_info(&oggi, -1);
-    fprintf(stderr,"\n%dchn/%ldHz\n",vi->channels,vi->rate);
-  }
+  
+  vi=ov_info(&oggi, -1);
+  fprintf(stderr,"\n%dchn/%ldHz\n",vi->channels,vi->rate);
 
   atexit(SDL_Quit);
-  fprintf(stderr, "d0\n");
+
   aanispex.freq=44100;
   aanispex.format=AUDIO_S16;
   aanispex.channels=2;
@@ -171,13 +169,41 @@ int main(int argc, char *argv[]) {
   aanispex.userdata=&oggi;
 
   if (SDL_OpenAudio(&aanispex, 0)<0) {
-    fprintf(stderr, "sdlerror %s\n", SDL_GetError());
-    //return 1;
+    fprintf(stderr, "SDL Audio Error: %s\n", SDL_GetError());
   }
-  fprintf(stderr, "d1\n");
 
-  if(argc==2 && !strcmp(argv[1],"-fullscreen"))
-    fullscreen=1;
+  const SDL_VideoInfo *info;
+  info = SDL_GetVideoInfo();
+  printf("screen: %dx%d\n", info->current_w, info->current_h);
+
+  {
+    int i,n,w,h;
+    char *p;
+    for(i=1; i<argc; i++) {
+      p = argv[i];
+      while(*p == '-') p++;
+      printf("argv[%d] = %s\n", i, p);
+      
+      if(strcmp(p, "fullscreen") == 0) {
+        fullscreen=1;
+      }
+      if(strcmp(p, "stretch") == 0) {
+        fullscreen=1;
+        WIDTH = info->current_w;
+        HEIGHT = info->current_h;
+      }
+      if(strcmp(p, "nofill") == 0) {
+        fill=0;
+      }
+      
+      n = sscanf(p, "%dx%d", &w, &h);
+      if(n==2) {
+        WIDTH = w;
+        HEIGHT = h;
+      }
+    }  
+  }
+
 #ifdef OSX
   /* On OSX we have two different applets with separate names. The one
      ending with 'w' is windowed */
@@ -185,48 +211,33 @@ int main(int argc, char *argv[]) {
     fullscreen=1;
 #endif
 
-  SDL_VideoInfo *info;
-  info = SDL_GetVideoInfo();
-  printf("screen: %dx%d\n", info->current_w, info->current_h);
-
-  if(argc==2 && !strcmp(argv[1],"-fullscreen")) {
-    fullscreen=1;
-    WIDTH = info->current_w;
-    HEIGHT = info->current_h;
-  }
   printf("will display in: %dx%d %s\n", WIDTH, HEIGHT, fullscreen ? "fullscreen" : "windowed");
   graffa = malloc(WIDTH*HEIGHT);
 
   if(fullscreen) {
     screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE|SDL_FULLSCREEN);//|SDL_DOUBLEBUF);
+    SDL_ShowCursor(0);
   } else {
     screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE);//|SDL_DOUBLEBUF);
-    SDL_WM_SetCaption("dose 2 by mfx",NULL);
   }
-
-  fprintf(stderr, "d2\n");
-//  screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, 0);
-  SDL_ShowCursor(0);
-  fprintf(stderr, "d3\n");
+  SDL_WM_SetCaption("dose 2 by mfx",NULL);
 
   t=0;
   bytesleft=0;
-  fprintf(stderr, "d4\n");
 
   initdemo();
   time0=SDL_GetTicks();
   SDL_PauseAudio(0);
   SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
   SDL_EventState(SDL_QUIT, SDL_ENABLE);
-  fprintf(stderr, "d5\n");
 
   while (!stopnow) {
     float aikaero=.02;
     SDL_Event eve;
     timex=SDL_GetTicks()-time0;
 
-    //if (timex> 20*1000)
-    //  stopnow++; 
+    if (timex> 20*1000)
+      stopnow++; 
 
     while (SDL_PollEvent(&eve))
     {
@@ -251,9 +262,8 @@ int main(int argc, char *argv[]) {
     rundemo(f);
     }
 
-    fillcopy(screen, graffa);
+    fillcopy(screen, graffa, fill);
     
-
     {
       char *p=teepal1();
       static SDL_Color pp[256];
@@ -265,33 +275,13 @@ int main(int argc, char *argv[]) {
     SDL_Flip(screen);
     
     frames++;
-
-
     release();
   }
 
   printf("fps:%d\n", 1000*frames/timex);
 
-
   //fclose(fp);
   ov_clear(&oggi);
   SDL_CloseAudio();
-  //fclose(fp);
-/*  if ( !MIDASstopStream(stream) )
-    MIDASerror();
-  if ( !MIDAScloseChannels() )
-      MIDASerror();
-  if ( !MIDASstopBackgroundPlay() )
-      MIDASerror();
-*/
-
-  //if (!MIDASstopModule(module)) MIDASerror();
-  //if (!MIDASfreeModule(module)) MIDASerror();
-//  if (!MIDASclose()) MIDASerror();
-
-//  set_intr(0x9, oldk);
-  //vid_close();
-  //SDL_Quit();
-
   return 0;
 }

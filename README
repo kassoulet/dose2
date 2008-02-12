@@ -1,6 +1,13 @@
 
-Resolution-independant modifications by Gautier Portet <kassoulet gmail com>
 
+Resolution-independant modifications by Gautier Portet <kassoulet gmail com> - 2008-02-12 
+
+you can use the following command line options:
+  -fullscreen    change to fullscreen mode, default resolution is 640x480.
+  -strech        use current video mode (eg. 1280x800).
+  -WIDTHxHEIGHT  change display size.
+  -nofill        do not fill when copying buffer, be sure to check fillcopy in main.c
+                 to see how clever this code is...
 
 and now, the original infofile that came with source release
 ---
