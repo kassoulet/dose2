@@ -36,7 +36,8 @@ Obu2d *obu2d_lue2(char *fname) {
 }
 Obu2d *obu2d_draw(Obu2d *o, Layer *k, int tmask, M2d *m, M2d *mk) {
   int i, j;
-  static M2d m2d_sifti={WIDTH/640.0, 0, WIDTH/2*4096, 0, HEIGHT/480.0, HEIGHT/2*4096};
+  //static M2d m2d_sifti={WIDTH/640.0, 0, WIDTH/2*4096, 0, HEIGHT/480.0, HEIGHT/2*4096};
+  M2d m2d_sifti={WIDTH/640.0, 0, WIDTH/2*4096, 0, HEIGHT/480.0, HEIGHT/2*4096};
   M2d *mm=new_m2_mul(m, &m2d_sifti);
   for (i=0, j=0; i<o->tc; i++) if (!(tmask>>i&1) && j+1<k->lkm) {
     taso_draw(o->tl[i], k->vmem, mm, (j+1^j)<<k->shift);

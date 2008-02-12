@@ -94,6 +94,27 @@ void audioback(void *oggi, unsigned char *stream, int len) {
 
 }
 
+void fillcopy(SDL_Surface *screen, Uint32* graffa)
+{
+  int x, y;
+ 
+  int *p32=screen->pixels, *q32=graffa;
+  char *q8=(char*)graffa;
+
+  for (x=0; x<screen->w; x++) q8[x]^=q8[x-1];
+  for (y=0; y<screen->h-1; y++) {
+    for (x=0; x<screen->w>>2; x++) {
+      p32[x]=q32[x];
+      q32[x+WIDTH/4]^=q32[x];
+    }
+    p32+=screen->pitch>>2;
+    q32+=WIDTH/4;
+  }
+}
+
+int WIDTH=640;
+int HEIGHT=480;
+
 
 void fla(int a) {}
 int main(int argc, char *argv[]) {
@@ -110,7 +131,7 @@ int main(int argc, char *argv[]) {
   unsigned time0, timex;
   SDL_Surface *screen;
   SDL_Color colors[256];
-  static Uint32 graffa[WIDTH/4*HEIGHT];
+  static Uint32* graffa; //[WIDTH/4*HEIGHT];
   static SDL_AudioSpec aanispex;
   int frames = 0;
 
@@ -155,20 +176,31 @@ int main(int argc, char *argv[]) {
   }
   fprintf(stderr, "d1\n");
 
-  if(argc==2 && !strcmp(argv[1],"-window"))
-    fullscreen=0;
+  if(argc==2 && !strcmp(argv[1],"-fullscreen"))
+    fullscreen=1;
 #ifdef OSX
   /* On OSX we have two different applets with separate names. The one
-     ending with 'w' is widowed */
-  if(argv[0][strlen(argv[0])-1]=='w')
-    fullscreen=0;
+     ending with 'w' is windowed */
+  if(argv[0][strlen(argv[0])-1]!='w')
+    fullscreen=1;
 #endif
 
-  if(fullscreen)
+  SDL_VideoInfo *info;
+  info = SDL_GetVideoInfo();
+  printf("screen: %dx%d\n", info->current_w, info->current_h);
+
+  if(argc==2 && !strcmp(argv[1],"-fullscreen")) {
+    fullscreen=1;
+    WIDTH = info->current_w;
+    HEIGHT = info->current_h;
+  }
+  printf("will display in: %dx%d %s\n", WIDTH, HEIGHT, fullscreen ? "fullscreen" : "windowed");
+  graffa = malloc(WIDTH*HEIGHT);
+
+  if(fullscreen) {
     screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE|SDL_FULLSCREEN);//|SDL_DOUBLEBUF);
-  else
-  {
-    screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE|SDL_DOUBLEBUF);//|SDL_DOUBLEBUF);
+  } else {
+    screen=SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_SWSURFACE);//|SDL_DOUBLEBUF);
     SDL_WM_SetCaption("dose 2 by mfx",NULL);
   }
 
@@ -189,13 +221,12 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "d5\n");
 
   while (!stopnow) {
-    //char *vm;
-    //Lfb *l;
-    //static int oldf;
-    //int ttemp;
     float aikaero=.02;
     SDL_Event eve;
     timex=SDL_GetTicks()-time0;
+
+    //if (timex> 20*1000)
+    //  stopnow++; 
 
     while (SDL_PollEvent(&eve))
     {
@@ -211,65 +242,25 @@ int main(int argc, char *argv[]) {
     mark();
     con=1, bri=0;
 
-    aikaero=0.0;//1.43;//oli 1.45
-
-    //if (kcnt[74]) skip=-44100*10, kcnt[74]=0;
-    //if (kcnt[78]) skip=44100*10, kcnt[78]=0;
-    //ttemp=MIDASfeedStreamData(stream, buffer+bufsiz-bytesleft, bytesleft, 0);
-    //bytesleft-=ttemp;
-    //aikah+=ttemp;
-
-    //l=vid_openlfb(v);
     init_layers((char*)graffa, new_col(0, 0, 0, 0));
     memset(graffa, 0, WIDTH*HEIGHT);
-    
-    
-    
-    //{ static Positio p; t=pos_get(&p); }
+
 
     {
-//    float f=(aikah/44100.0/4.0/60.0)*132.3412*4 - aikaero*32;
-    float f=(timex/1000.0/60.0)*132.3412*4 - aikaero*32;
-    rundemo(f);//-fsin2(f*.25)*.0);
+    float f=(timex/1000.0/60.0)*132.3412*4;
+    rundemo(f);
     }
 
-    {
-      int x, y;
-      /*unsigned int *z32=graffa;
-      for (x=0; x>WIDTH*HEIGHT/4; x++) {
-        *z32 >>= 1;
-        *z32 &= 0xfefefefe ;
-        z32++;
-      }*/ 
-      
-      
-      int *p32=screen->pixels, *q32=graffa;
-      char *q8=(char*)graffa;
-      //p8[rand()&32767]=rand();
-      for (x=0; x<screen->w; x++) q8[x]^=q8[x-1];
-      for (y=0; y<screen->h-1; y++) {
-        for (x=0; x<screen->w>>2; x++) {
-          p32[x]=q32[x];
-          q32[x+WIDTH/4]^=q32[x];
-        }
-        p32+=screen->pitch>>2;
-        q32+=WIDTH/4;
-      }
-    }
+    fillcopy(screen, graffa);
+    
 
-    //for (i=1; i<WIDTH; i++) l->buf[i]^=l->buf[i-1];
-
-
-    //for (i=0; i<HEIGHT; i++) l->buf[i*WIDTH]=0, l->buf[i*WIDTH+1]=0;
-    //for (i=0; i*10<HEIGHT; i++) l->buf[i*10*WIDTH]=l->buf[i*10*WIDTH]=i^i+1;
     {
       char *p=teepal1();
       static SDL_Color pp[256];
       for (i=0; i<256; i++) pp[i].r=p[i*3], pp[i].g=p[i*3+1], pp[i].b=p[i*3+2];
       SDL_SetColors(screen, pp, 0, 256);
     }
-    //vid_closelfb(v);
-//    teepal2();
+ 
     SDL_UnlockSurface(screen);
     SDL_Flip(screen);
     

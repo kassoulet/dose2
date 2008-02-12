@@ -1,4 +1,10 @@
 
+Resolution-independant modifications by Gautier Portet <kassoulet gmail com>
+
+
+and now, the original infofile that came with source release
+---
+
 this is the full source release of "dose 2" by mfx. a little endian cleaning
 and fixing for non-pc platforms was done my marq/fit (marq@iki.fi). should be 
 easy to compile on any modern os that has sdl (www.libsdl.org). tested and 
