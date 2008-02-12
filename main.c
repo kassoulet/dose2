@@ -235,8 +235,8 @@ int main(int argc, char *argv[]) {
     SDL_Event eve;
     timex=SDL_GetTicks()-time0;
 
-    if (timex> 20*1000)
-      stopnow++; 
+    //if (timex> 20*1000)
+    //  stopnow++; 
 
     while (SDL_PollEvent(&eve))
     {
