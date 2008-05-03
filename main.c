@@ -76,15 +76,7 @@ M2d *new_m2_mul(M2d *a, M2d *b) {
 int aikah=0;
 void audioback(void *oggi, unsigned char *stream, int len) {
   int i, lkm, foo=0;
-  //for (i=0; i<len; i++) stream[i]=rand();
-
-  //if (kcnt[74]) skip=-44100*10, kcnt[74]=0;
-  //if (kcnt[78]) skip=44100*10, kcnt[78]=0;
-/*      if (skip) {
-        if (ov_pcm_seek(&oggi, oggi.pcm_offset+skip)==0) aikah+=skip*4;
-        skip=0;
-      } */
-      //fread(buffer, 100000, 1, vavi);
+ 
   if (stopnow) return;
   aikah+=len;
   while (len>0) {
@@ -92,8 +84,7 @@ void audioback(void *oggi, unsigned char *stream, int len) {
     if (lkm<=0) { stopnow++; return; }
     len-=lkm; stream+=lkm;
   }
-  //ttemp=MIDASfeedStreamData(stream, buffer+bufsiz-bytesleft, bytesleft, 0);
-  //bytesleft-=ttemp;
+ 
 
 }
 
