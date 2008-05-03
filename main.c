@@ -1,5 +1,13 @@
 //3703
 
+/* Profile info, in 1024x768
+ * 25% vorbis decoding
+ * 35% blitting
+ * 15% rundemo
+ * 20% fillcopy
+ * */
+
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -258,11 +266,12 @@ int main(int argc, char *argv[]) {
       char *p=teepal1();
       static SDL_Color pp[256];
       for (i=0; i<256; i++) pp[i].r=p[i*3], pp[i].g=p[i*3+1], pp[i].b=p[i*3+2];
-      SDL_SetColors(screen, pp, 0, 256);
+      SDL_SetColors(screen, pp, 0, 256); // this force a blit !!
+      //SDL_SetPalette(screen, SDL_PHYSPAL, pp, 0, 256);
     }
  
     SDL_UnlockSurface(screen);
-    SDL_Flip(screen);
+    //SDL_Flip(screen);
     
     frames++;
     release();
