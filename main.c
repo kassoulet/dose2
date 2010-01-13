@@ -84,7 +84,7 @@ M2d *new_m2_mul(M2d *a, M2d *b) {
 int aikah=0;
 void audioback(void *oggi, unsigned char *stream, int len) {
   int i, lkm, foo=0;
- 
+
   if (stopnow) return;
   aikah+=len;
   while (len>0) {
@@ -92,21 +92,21 @@ void audioback(void *oggi, unsigned char *stream, int len) {
     if (lkm<=0) { stopnow++; return; }
     len-=lkm; stream+=lkm;
   }
- 
+
 
 }
 
 void fillcopy(SDL_Surface *screen, Uint32* graffa, int fill)
 {
   int x, y;
- 
+
   int *p32=screen->pixels, *q32=graffa;
   char *q8=(char*)graffa;
   int nextline=0;
   if (fill) {
     nextline = WIDTH/4;
   }
-  for (x=0; x<screen->w; x++) q8[x]^=q8[x-1];
+  for (x=1; x<screen->w; x++) q8[x]^=q8[x-1];
   for (y=0; y<screen->h-1; y++) {
     for (x=0; x<screen->w>>2; x++) {
       p32[x]=q32[x];
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "error in %s", moduleName);
     return 1;
   }
-  
+
   vi=ov_info(&oggi, -1);
   fprintf(stderr,"\n%dchn/%ldHz\n",vi->channels,vi->rate);
 
@@ -193,13 +193,13 @@ int main(int argc, char *argv[]) {
       if(strcmp(p, "nofill") == 0) {
         fill=0;
       }
-      
+
       n = sscanf(p, "%dx%d", &w, &h);
       if(n==2) {
         WIDTH = w;
         HEIGHT = h;
       }
-    }  
+    }
   }
 
 #ifdef OSX
@@ -235,7 +235,7 @@ int main(int argc, char *argv[]) {
     timex=SDL_GetTicks()-time0;
 
     //if (timex> 20*1000)
-    //  stopnow++; 
+    //  stopnow++;
 
     while (SDL_PollEvent(&eve))
     {
@@ -261,7 +261,7 @@ int main(int argc, char *argv[]) {
     }
 
     fillcopy(screen, graffa, fill);
-    
+
     {
       char *p=teepal1();
       static SDL_Color pp[256];
@@ -269,10 +269,10 @@ int main(int argc, char *argv[]) {
       SDL_SetColors(screen, pp, 0, 256); // this force a blit !!
       //SDL_SetPalette(screen, SDL_PHYSPAL, pp, 0, 256);
     }
- 
+
     SDL_UnlockSurface(screen);
     //SDL_Flip(screen);
-    
+
     frames++;
     release();
   }
