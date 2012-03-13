@@ -27,8 +27,8 @@
 
 #define HEAPSIZE 10000000
 
-int WIDTH=640;
-int HEIGHT=480;
+int WIDTH=1440*2;
+int HEIGHT=1080*2;
 
 char *moduleName="data/italo160.ogg";
 volatile unsigned frame;
@@ -117,6 +117,90 @@ void fillcopy(SDL_Surface *screen, Uint32* graffa, int fill)
   }
 }
 
+#define OVERFRAMES 20
+unsigned char * framesave;
+unsigned char palettesave[768*OVERFRAMES];
+int pos=0;
+
+int FRAME = 9000;
+int ENDFRAME = 12000*OVERFRAMES;
+
+void saveframe()
+{
+  int i, j, x, y;
+
+  FILE *dst;
+
+  char fname[1024];
+  sprintf(fname, "dosedump20x/dose2-dump-%08d.ppm.png", FRAME);
+  dst = fopen(fname, "r");
+  if (dst) {
+    FRAME++;
+    return;
+  }  
+  dst = fopen(fname, "w");
+  fclose(dst);
+
+  sprintf(fname, "dosedump20x/dose2-dump-%08d.ppm", FRAME++);
+  dst = fopen(fname, "w");
+  fprintf(dst, "P3 %d %d 255 \n", WIDTH, HEIGHT);
+
+  int linear[256];
+    for (j=0; j<256; j++) {
+      linear[j] = 1023.0f * powf(j/255.0f, 2.2f);
+    }
+  int gamma[1024];
+    for (j=0; j<1024; j++) {
+      gamma[j] = 255.0f * powf(j/1023.0f, 0.4545f);
+    }
+
+  
+  int p=0;
+  for (y=0; y<HEIGHT; y++) {
+    for (x=0; x<WIDTH; x++) {
+      //float c[3]= {0};
+      int c[3]= {0};
+      for (i=0; i<OVERFRAMES; i++) {
+        unsigned char color = framesave[WIDTH*HEIGHT* i + p];
+        for (j=0; j<3; j++) {
+          //c[j] += powf(palettesave[768 * i + 3*color + j]/255.0, 2.2);
+          //c[j] += palettesave[768 * i + 3*color + j];
+          c[j] += linear[palettesave[768 * i + 3*color + j]];
+        }
+      }
+      
+      for (j=0; j<3; j++) {
+        //fprintf(dst, "%d ", (int) ( 255.0 * powf(c[j] / OVERFRAMES, 0.45)));
+        //fprintf(dst, "%d ", c[j] / OVERFRAMES);
+        fprintf(dst, "%d ", gamma[c[j] / OVERFRAMES]);
+      }
+      p++;
+    }
+    fprintf(dst, "\n");
+  }
+  fclose(dst);
+
+    char cmd[10000];
+    sprintf(cmd, "{ convert %s -resize 50%% %s.png ; rm %s; } &", fname, fname, fname);
+    system(cmd);
+}
+
+
+void storeframe(char * graffa)
+{
+  char *palette=teepal1();
+  memcpy(framesave + WIDTH*HEIGHT*pos, graffa, WIDTH*HEIGHT);
+  memcpy(palettesave + 768*pos, palette, 768);
+  
+  pos++;
+  pos %= OVERFRAMES;
+  
+  if (pos == 0) {
+    saveframe();
+  }
+}
+
+
 
 
 void fla(int a) {}
@@ -137,6 +221,8 @@ int main(int argc, char *argv[]) {
   static Uint32* graffa;
   static SDL_AudioSpec aanispex;
   int frames = 0;
+
+  framesave = malloc(OVERFRAMES*WIDTH*HEIGHT); //DUMP
 
   hptrs[0]=hptrs[1]=hiippi;
   mark();
@@ -225,14 +311,18 @@ int main(int argc, char *argv[]) {
 
   initdemo();
   time0=SDL_GetTicks();
-  SDL_PauseAudio(0);
+  //SDL_PauseAudio(0); //DUMP
   SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
   SDL_EventState(SDL_QUIT, SDL_ENABLE);
+
+  timex=FRAME*OVERFRAMES;
 
   while (!stopnow) {
     float aikaero=.02;
     SDL_Event eve;
-    timex=SDL_GetTicks()-time0;
+    //timex=SDL_GetTicks()-time0; //DUMP
+
+    timex += 20/OVERFRAMES; //DUMP
 
     //if (timex> 20*1000)
     //  stopnow++;
@@ -262,6 +352,7 @@ int main(int argc, char *argv[]) {
 
     fillcopy(screen, graffa, fill);
 
+
     {
       char *p=teepal1();
       static SDL_Color pp[256];
@@ -273,7 +364,14 @@ int main(int argc, char *argv[]) {
     SDL_UnlockSurface(screen);
     //SDL_Flip(screen);
 
+    storeframe((char *)graffa);
+
     frames++;
+    
+    if (frames > ENDFRAME) {
+      stopnow = 1;
+    }
+    
     release();
   }
 
