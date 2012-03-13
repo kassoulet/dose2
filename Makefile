@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3 -ffast-math `$(SDLPREFIX)sdl-config --cflags`
+CFLAGS = -g -O3 -march=native -mtune=native -ffast-math `$(SDLPREFIX)sdl-config --cflags`
 
 # -- These are for Mac OS X only, remove for other targets
 #SDLPREFIX = /usr/local/bin/
